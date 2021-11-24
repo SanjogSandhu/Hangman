@@ -1,0 +1,142 @@
+# Pong by Sanj - Tutorial
+
+import turtle
+wn = turtle.Screen()
+wn.title("Pong by Sanj")
+wn.bgcolor("black")
+wn.setup(width=800,height=600)
+wn.tracer(0)
+
+# Score
+score_a = 0
+score_b = 0
+
+# Paddle A
+# Note the non-capital for the module, but capital for the next bit, because that's the 'class name'.
+# The guy in the video said that's not covered in the beginner tutorial. Maybe Google
+paddle_a = turtle.Turtle()
+paddle_a.speed(0)
+paddle_a.shape("square")
+paddle_a.color("white")
+paddle_a.shapesize(stretch_wid=5, stretch_len=1)
+paddle_a.penup()
+paddle_a.goto(-350,0)
+
+# Paddle B
+paddle_b = turtle.Turtle()
+paddle_b.speed(0)
+paddle_b.shape("square")
+paddle_b.color("white")
+paddle_b.shapesize(stretch_wid=5, stretch_len=1)
+paddle_b.penup()
+paddle_b.goto(350,0)
+
+# Always make sure you run your program often, to test it. Otherwise you'll never figure out where
+# the problems lie
+
+# Ball
+ball = turtle.Turtle()
+ball.speed(0)
+ball.shape("square")
+ball.color("white")
+ball.penup()
+ball.goto(0,0)
+#Now adding the ball's movements (dx, dy - dat maths tho)
+ball.dx = 0.1
+ball.dy = -0.1
+
+# Pen (Creating a scoring system)
+pen = turtle.Turtle()
+pen.speed(0)
+pen.color("white")
+# Pen up 'lifts' the pen up, so it stops writing! I remember doing this in SPS IT!
+pen.penup()
+pen.hideturtle()
+pen.goto(0, 260)
+pen.write(("Player A: 0  Player B: 0"), align="center", font=("Courier", 24, "normal"))
+# Now we add score to the if statements
+
+# Function
+def paddle_a_up():
+        y = paddle_a.ycor()
+        y += 20
+        # Adds 20 pixels to y coordinate
+        paddle_a.sety(y)
+        # Sets y cord of paddle to the new y (+20)
+
+def paddle_a_down():
+        y = paddle_a.ycor()
+        y -= 20
+        # Subtracts 20 pixels to y coordinate
+        paddle_a.sety(y)
+        # Sets y cord of paddle to the new y (-20)
+
+def paddle_b_up():
+        y = paddle_b.ycor()
+        y += 20
+        paddle_b.sety(y)
+
+def paddle_b_down():
+        y = paddle_b.ycor()
+        y -= 20
+        paddle_b.sety(y)
+        # Sets y cord of paddle to the new y (-20)
+
+# Keyboard binding
+wn.listen()
+# When the user presses w, call the function paddle a up
+wn.onkeypress(paddle_a_up, "w")
+wn.onkeypress(paddle_a_down, "s")
+wn.onkeypress(paddle_b_up, "Up")
+wn.onkeypress(paddle_b_down, "Down")
+
+# Main game loop
+while True:
+        wn.update()
+
+        #Move the ball (starts at x=0, so the first iteration, it would move +2
+        ball.setx(ball.xcor() + ball.dx)
+        ball.sety(ball.ycor() + ball.dy)
+
+        # Border checking (300 is halfway to edge of screen, and the actual ball is 20.
+        # So we're splitting the difference
+        if ball.ycor() > 290:
+                ball.sety(290)
+                # Reverses direction
+                ball.dy *= -1
+        # 400 to edge of x screen
+        if ball.xcor() >  390:
+                ball.setx(0)
+                ball.sety(0)
+                ball.dx *= -1
+                score_a += 1
+                # Clearing the 0, or whatever the score is, before updating the number
+                pen.clear()
+                pen.write(("Player A: {}  Player B: {}".format(score_a, score_b)), align="center", font=("Courier", 24, "normal"))
+        #Now we've done it for the x and y positive axes, now we need to do it for the negative
+        if ball.ycor() < -290:
+                ball.sety(-290)
+                # Reverses direction
+                ball.dy *= -1
+        # 400 to edge of x screen
+        if ball.xcor() <  -390:
+                ball.setx(0)
+                ball.sety(0)
+                ball.dx *= -1
+                score_b += 1
+                pen.clear()
+                pen.write(("Player A: {}  Player B: {}".format(score_a, score_b)), align="center", font=("Courier", 24, "normal"))
+
+        # Paddle and ball collisions
+        # 350 means edges of ball and paddle are touching - ball and paddle are both 20 wide!
+        # Added ball xcor <350, which gets it to the middle of the paddle (cos it was acting strange)
+        if ball.xcor() > 340 and ball.xcor() < 350 and (ball.ycor() < paddle_b.ycor() + 40 and ball.ycor() > paddle_b.ycor() - 40):
+               #Moves ball back a little bit
+                ball.setx(340)
+                ball.dx *= -1
+
+        if ball.xcor() < -340 and ball.xcor() > -350 and (
+                ball.ycor() < paddle_a.ycor() + 40 and ball.ycor() > paddle_a.ycor() - 40):
+                # Moves ball back a little bit
+                ball.setx(-340)
+                ball.dx *= -1
